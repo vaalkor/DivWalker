@@ -5,4 +5,8 @@ Just a guy that likes walking along divs (and other elements). Triggered from a 
 
 https://divwalker.arbitrarydata.co.uk/
 
-![image](https://i.imgur.com/5UTfpbX.gif)
+![image](https://i.imgur.com/CxRxErv.gif)
+
+## How to add the bookmark
+
+![image](https://i.imgur.com/JgiIIfY.gif)
