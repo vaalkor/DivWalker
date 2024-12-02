@@ -1,0 +1,15 @@
+.box {
+  position: absolute;
+  background-color: red;
+  height: 50px;
+  width: 200px;
+}
+
+.man {
+  position: fixed;
+  z-index: 5000;
+}
+
+.temp-color { 
+  background-color: green;
+}
