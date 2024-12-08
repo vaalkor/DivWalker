@@ -5,3 +5,10 @@
   width: 70vw;
   background-color: skyblue;
 }
+
+.test-box{
+  width:200px;
+  height:200px;
+  background-color: lightcoral;
+  margin:100px;
+}

@@ -1,5 +1,7 @@
 let currentElement = null;
 let selectionEnabled = true;
+let divWalkerHeight = 64;
+let divWalkerWidth = 39;
 let images = [
     "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACcAAABACAMAAACujJ7lAAAAM1BMVEVHcEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADbQS4qAAAAEXRSTlMAbJh9RxkO29j/yamPVrczJ8Pt3KAAAAFMSURBVHgBpZaHboRADESzhR1vofz/10YYgVbbbCVWS8Q7Dx6Xu5+/h7HObyIVQDFGMhKXIoeXODxckjiSuTofpErcA0Is2DKXZf/ubJA5YlUxEm6b5aaBq3BaWwSs4OEoyEVwGFmWIyk5aLkgTx/HvuSOj7NLLn9cUnJQvh/p6o045X5wHEoOOt0Ir8sXs5xPFE4dJ+eLu5LLSg5Bx8Uk+8LhZtiFWMc140pNWVz/LHdDVPns+DlZCNz73GN58z3eeXq4slpKHPcnaGUzmGv/HMtifyqiOYd6HTH9DvGcItQWmdkI0FfiRpPVPPG+USU8SYfKsTxezast0I+FqZuQoXChzofEbo7mmJrh6YUxOCh737o0aufZSxTGmm0IePsTjro0O+x3NoXgX+/AquObhOoCZyL+rxUGCLkR6ROCMBhSdGvtzPjnCBYn+RfjSBgmLvj3QgAAAABJRU5ErkJggg==",
     "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACcAAABACAMAAACujJ7lAAAAOVBMVEVHcEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADLcPMfAAAAE3RSTlMAEUnb2Qj/qXuTWiq2hjgd0MZsnh1hdQAAAWlJREFUeAFioAAAKqvabQdBGAam1KHOCe//sPfoWZ0o0N781Jx+JsV7C2sAAYBGC+Ado8Z78QHSePHL87Z4PCm8GQcNaoELlPoE7yOeSluxZ/2oPJiiuW3nUdJoE9nGTHwAWRMBm/YW+QtYeWuXl1nwUnYh6E8msa1AsIAU0Qsw9bbBbEq8XHlZKU9ARh6GFs2DTQE/XABBiafu7sLbhs5oiH9wA+AN88suNa/RWHQ7AFHnYS93acgPxZhHzoaFvF1Aagwat3UExUb/0sGs6IBG6q8tiuLRs5yk3ZyL6Ck/41RTlwexhfh9bR5cpu3SUe6Eux6GqgpeOL0jAakVjsZCsqhJCuWPWHfmXGSVrpZ6E0l9R+JRzufuFbolno4mlue3VBZHMrpu4kDVFxf3s7/V7+JjdVS/s9u5uiH83BjrxyGFeVokVSZUNBTlTcQ19bslIMTiYMBXHica5/U+QYSn65+O85kJro0/T54Sed6JR4cAAAAASUVORK5CYII=",
@@ -17,90 +19,135 @@ let images = [
     "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACcAAABACAMAAACujJ7lAAAAP1BMVEVHcEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC6E+JdAAAAFXRSTlMAbLPAnWBR2f8v3DVEB6bKFIx4It80HTDwAAABW0lEQVR4AWIgGwAaqxMcB2EYCqCFEPz57DT3P+tIQ3Gm0sS2VqQ+JY63dn0a8uiyJAAgHpsIAKDnMm43xxyW2L1+gHJD/8H9r1tdtwHgfnjsZOjWRQDgch1jrx1uxxw6DthtNj6OtuuAUH3z43CabgZCAR5AKMCV6uwCq8MSdFfQbb7zH7yKOvHz4ifmTXU5GN8RdGaer6CrDG+DZUEof0Nl4OKtAj+B25cb7LavcGqW48tBgo5nw02f3xM/H9l0w2t/oDWWZXy9UrGSuNRD+mKct6BWTO4IjPXSaUuw0QznPeHa2WL1QalHD1YfXPVzNNq03INRAMhqONaFxAabqQtyBIC+4a66p5I1wklfuxYAcjScaEyn2X7UohXLdXxSmwmAnXEtulo/a1dx1j9/WkNZPkeXtuPfbTFuhbPbBPeTxWi+op05Mcn/jtwF3PW6K6XBWByl6HgftXI/XPwYvB8SNVIAAAAASUVORK5CYII=",
     "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACcAAABACAMAAACujJ7lAAAAOVBMVEVHcEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADLcPMfAAAAE3RSTlMAaqq0iFpQxP81RcKckAd8FCnHpLtREgAAAVJJREFUeAFiIBswAhorwyQLQRgGr+ijwYIK9z/sjrwBcXZL6+9vEhIqdev28Sq2EgCQhgWCifvgywUbh13zZdiMiSq2q4Fjk1O+dGPu0LCTAOiu/sawqFzFwBq2ceXIm+QAp5yOYap5QeOC6Xa1xAGwHPC4ANMBL+rcYeoFCEZuMXKbwtkCPxxP88JWTObOzSfGdblryiXBVszLc9vO0aLXogr6BwMlZZyFxCKHKHI7jIKwCV6wCeYWtcxnKzS/9QtynuUoe7+/OOuZnh+PpP76qUJ1XoVXrdne7yoApMmUlkF7mUxfGrS9zFEY1kOQudL2pnwh+81to7Ycl7LACbY/Zc71Zlnk6vHONjpFvI4TQAnjFTrRtv+NqzgunscY8jqk0SmTtGzyS+EjTp97bYOE2rnExa5+8sageMxmqvdZwH+emUhEVMo7Yn4neZWGf3/GXwNUFxwNMtX+AAAAAElFTkSuQmCC",
     "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACcAAABACAMAAACujJ7lAAAAPFBMVEVHcEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACHr/7WAAAAFHRSTlMADpW4oWA/Kdn/TNvGctEbfoisMtRGjVgAAAFSSURBVHgBrZVRkoQgDERXFQZoQNX733VHszpgGZLamnz58cRO6LQ//66uH0ZjOwl7Ob+XkTjCfJA4EBeVHLTcS+ASCcziXNLBjSI37V9FL3KgLqRyUKmbcXS7fGl8I4hznXgc1azkopKDlmsLjESJRh0IEi94vTjXnt/FQctpv9vp+vCbbi4ILS4r9Vmc3PAVw/Tu5ILuOL825bmLwyReh+zUXHDYxPCjyuL1UsGynPG6A3sCRIXR6w7En7B4PrQ5KWa6Yy5I7ye0Utp+DrGt3818YBS5Cbz5h1IT+GVypaEGvg+UAbSyXHLlXixsauVyEtTUxMlD7Qn7ZJZd3ueHELj5xXorLLedqFNvY9JyQb2NgVkm3MInPRtmpG5v3s7P1sPd2+uzBcz9xVk8jrIBYzJL+fGAt75U9U/Wh7v1vMG7igOMiTk9ZCm9Klb2wMzk4y+gPBnDhtgMYQAAAABJRU5ErkJggg=="
-    ];
+];
 
-if(!document.getElementById("##MrDivWalkerCss"))
-{
+if (!document.getElementById("##MrDivWalkerCss")) {
     let elem = document.createElement("div");
     elem.id = "##MrDivWalkerCss";
 
-    elem.innerHTML = `<style>.man{position: fixed;z-index:1000;} .delete-highlight{background-color: skyblue!important;}</style>`;
+    elem.innerHTML = `<style>.delete-highlight{background-color: skyblue!important;}</style>`;
     document.querySelector("body").appendChild(elem);
 }
 
-function onMouseDown(e)
-{
+function onMouseDown(e) {
     addWalkerIfSelectionEnabled();
 }
 
-function addWalkerIfSelectionEnabled()
-{
-    if(selectionEnabled && currentElement != null)
-    {
+function createWalker(){
+    let mrDivWalker = document.createElement("img");
+    mrDivWalker.src = images[0];
+    mrDivWalker.style.position = 'fixed';
+    mrDivWalker.style.zIndex = '1000';
+    mrDivWalker.classList.add("man");
+    document.body.appendChild(mrDivWalker);
+    return mrDivWalker;
+}
+
+function addDebuggingElement() {
+    if (selectionEnabled && currentElement != null) {
+        let walker = createWalker();
+
+        let boundingRect = currentElement.getBoundingClientRect();
+        let fixedElement = document.createElement("div");
+        fixedElement.style.position = "fixed";
+        fixedElement.style.left = `${boundingRect.left}px`;
+        fixedElement.style.top = `${boundingRect.top}px`;
+        fixedElement.style.width = `${boundingRect.width}px`;
+        fixedElement.style.height = `${boundingRect.height}px`;
+        fixedElement.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+        document.body.appendChild(fixedElement);
+
+        walkTo(fixedElement, { x: boundingRect.left, y: boundingRect.top }, { x: 400, y: 400 }, 10, null);
+
+        if (currentElement) { currentElement.classList.remove("delete-highlight"); }
+        currentElement = null;
+        selectionEnabled = false;
+    }
+}
+
+function addWalkerIfSelectionEnabled() {
+    if (selectionEnabled && currentElement != null) {
         addWalker(currentElement);
-        if(currentElement) {currentElement.classList.remove("delete-highlight");}
+        if (currentElement) { currentElement.classList.remove("delete-highlight"); }
         currentElement = null;
         selectionEnabled = false;
     }
 }
 
 document.querySelector('body').addEventListener('keypress', function (e) {
-    if (e.key === 'q' || e.key === '1') {
+    if (e.key === 'w') {
+        addDebuggingElement();
+        }
+    else if (e.key === 'q' || e.key === '1') {
         addWalkerIfSelectionEnabled();
     }
 });
 
-function onMouseMove(e)
-{
-    if(!selectionEnabled) return;
+function onMouseMove(e) {
+    if (!selectionEnabled) return;
 
     let x = e.clientX;
     let y = e.clientY;
-    let elem = document.elementFromPoint(x,y);
-    if(elem && currentElement !== elem)
-    {
-        if(currentElement){currentElement.classList.remove("delete-highlight");}
+    let elem = document.elementFromPoint(x, y);
+    if (elem && currentElement !== elem) {
+        if (currentElement) { currentElement.classList.remove("delete-highlight"); }
         currentElement = elem;
         currentElement.classList.add("delete-highlight");
     }
 }
 
-function addWalker(element)
-{
-    let boundingRect = element.getBoundingClientRect();
-    let currentIndex = 0;
-    let currentX = boundingRect.left;
-    let velocity = 3;
-    let direction = 1;
-    let mrDivWalker = document.createElement("img");
-    mrDivWalker.classList.add("man");
-    mrDivWalker.style.left = `${boundingRect.x}px`;
-    mrDivWalker.style.top = `${boundingRect.y-64}px`;
+function walkTo(walker, sourcePoint, targetPoint, velocity, frames, transform) {
+    return new Promise((resolve) => {
+        let currentFrame = -1;
 
-    document.body.append(mrDivWalker);
-    
-    setInterval(()=>{
-        boundingRect = element.getBoundingClientRect();
-        mrDivWalker.setAttribute("src", images[++currentIndex % images.length]);
-        currentX += (velocity*direction);
-    
-        if(currentX + 39 >= boundingRect.right)
-        {
-            direction = -1;
-            currentX = boundingRect.right-39;
-            mrDivWalker.style.transform = "scaleX(-1)";
-        }
-        if(currentX <= boundingRect.left)
-        {
-            direction = 1;
-            currentX = boundingRect.left;
-            mrDivWalker.style.transform = "scaleX(1)";
-        }
-    
-        mrDivWalker.style.top = `${boundingRect.y-64}px`;
-        mrDivWalker.style.left = `${currentX}px`;
-        mrDivWalker.style.display = "block";
-    }, 30);
+        let x = sourcePoint.x;
+        let y = sourcePoint.y;
+        let dx = targetPoint.x - x;
+        let dy = targetPoint.y - y;
+        let angle = Math.atan2(dy, dx);
+
+        let interval = undefined;
+
+        let iterate = () => {
+            x += Math.cos(angle) * velocity;
+            y += Math.sin(angle) * velocity;
+
+            walker.style.left = `${x}px`;
+            walker.style.top = `${y}px`;
+
+            if(frames)
+                walker.setAttribute("src", frames[++currentFrame % frames.length]);
+
+            if (Math.abs(targetPoint.x - x) <= velocity && Math.abs(targetPoint.y - y) <= velocity) {
+                clearInterval(interval);
+                walker.style.left = `${targetPoint.x}px`;
+                walker.style.top = `${targetPoint.y}px`;
+                resolve();
+            }
+        };
+
+        interval = setInterval(iterate, 30);
+        iterate();
+    });
+}
+
+async function addWalker(element) {
+    let boundingRect = element.getBoundingClientRect();
+    let newWalker = createWalker();
+    newWalker.style.left = `${boundingRect.x}px`;
+    newWalker.style.top = `${boundingRect.y - 64}px`;
+    newWalker.style.transformOrigin = 'bottom left';
+
+    while(true){
+        newWalker.style.transform = 'rotate(0deg)';
+        await walkTo(newWalker, { x: boundingRect.left - divWalkerWidth, y: boundingRect.top - divWalkerHeight }, { x: boundingRect.right, y: boundingRect.top - divWalkerHeight }, 3, images);
+        newWalker.style.transform = 'rotate(90deg)';
+        await walkTo(newWalker, { x: boundingRect.right, y: boundingRect.top - divWalkerHeight - divWalkerWidth}, { x: boundingRect.right, y: boundingRect.bottom - divWalkerHeight - divWalkerWidth}, 3, images);
+        newWalker.style.transform = 'rotate(180deg)';
+        await walkTo(newWalker, { x: boundingRect.right + divWalkerWidth, y: boundingRect.bottom - divWalkerHeight}, { x: boundingRect.left + divWalkerWidth, y: boundingRect.bottom  - divWalkerHeight}, 3, images);
+        newWalker.style.transform = 'rotate(270deg)';
+        await walkTo(newWalker, { x: boundingRect.left, y: boundingRect.bottom - divWalkerHeight + divWalkerWidth }, { x: boundingRect.left, y: boundingRect.top - divWalkerWidth }, 3, images);
+    }
 }
 
 document.addEventListener('mousemove', onMouseMove);
